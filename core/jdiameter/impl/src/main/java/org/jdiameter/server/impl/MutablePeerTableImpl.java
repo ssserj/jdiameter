@@ -42,54 +42,7 @@
 
 package org.jdiameter.server.impl;
 
-import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
-import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
-import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ConnectionTimer;
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.DuplicationMessageTimer;
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.PeerOverloadTimer;
-import static org.jdiameter.server.impl.helpers.Parameters.AcceptUndefinedPeer;
-import static org.jdiameter.server.impl.helpers.Parameters.DuplicateProtection;
-import static org.jdiameter.server.impl.helpers.Parameters.DuplicateSize;
-import static org.jdiameter.server.impl.helpers.Parameters.DuplicateTimer;
-import static org.jdiameter.server.impl.helpers.Parameters.PeerAttemptConnection;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownServiceException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.Configuration;
-import org.jdiameter.api.ConfigurationListener;
-import org.jdiameter.api.DisconnectCause;
-import org.jdiameter.api.IllegalDiameterStateException;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.Message;
-import org.jdiameter.api.MetaData;
-import org.jdiameter.api.MutableConfiguration;
-import org.jdiameter.api.MutablePeerTable;
-import org.jdiameter.api.Network;
-import org.jdiameter.api.Peer;
-import org.jdiameter.api.PeerState;
-import org.jdiameter.api.PeerTableListener;
-import org.jdiameter.api.Realm;
-import org.jdiameter.api.Statistic;
-import org.jdiameter.api.URI;
+import org.jdiameter.api.*;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
@@ -103,17 +56,27 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.controller.PeerTableImpl;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatisticManager;
-import org.jdiameter.server.api.IFsmFactory;
-import org.jdiameter.server.api.IMutablePeerTable;
-import org.jdiameter.server.api.INetwork;
-import org.jdiameter.server.api.IOverloadManager;
-import org.jdiameter.server.api.IPeer;
+import org.jdiameter.server.api.*;
 import org.jdiameter.server.api.io.INetworkConnectionListener;
 import org.jdiameter.server.api.io.INetworkGuard;
 import org.jdiameter.server.api.io.ITransportLayerFactory;
 import org.jdiameter.server.impl.helpers.EmptyConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URISyntaxException;
+import java.net.UnknownServiceException;
+import java.util.*;
+import java.util.concurrent.*;
+
+import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
+import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.*;
+import static org.jdiameter.server.impl.helpers.Parameters.*;
 
 /**
  * 
@@ -471,7 +434,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     }
 
                     if (peer != null) {
-                    	//FIXME: define procedure when 'peer.getRealm() != realm'
+                        //FIXME: define procedure when 'peer.getRealm() != realm'
                       logger.debug("Add [{}] connection to peer [{}]", connection, peer);
                       peer.addIncomingConnection(connection);
                       try {
@@ -608,13 +571,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     // Clear dynamic peers from peertable
     Iterator<String> it = super.peerTable.keySet().iterator();
     while(it.hasNext()) {
-    	String fqdn = it.next();
-    	if(this.predefinedPeerTable.contains(fqdn)) {
-    		continue;
-    	}
-    	else {
-    		it.remove();
-    	}
+        String fqdn = it.next();
+        if(this.predefinedPeerTable.contains(fqdn)) {
+            continue;
+        }
+        else {
+            it.remove();
+        }
     }
 
   }
@@ -623,7 +586,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     //TODO: add sKey here, now it adds peer to all realms.
     //TODO: better, separate addPeer from realm!
     try {
-    	logger.debug("Adding peer, URI-{}, realm-{}, connecting-{}", new Object[] {peerURI, realm, connecting});
+        logger.debug("Adding peer, URI-{}, realm-{}, connecting-{}", new Object[] {peerURI, realm, connecting});
       Configuration peerConfig = null;
       Configuration[] peers = config.getChildren(PeerTable.ordinal());
       // find peer config
@@ -648,19 +611,19 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
       for (Realm r : realms) {
         if (r.getName().equals(realm)) {
-        	boolean peerNameFound = false;
-        	for (String peerName : ((IRealm)r).getPeerNames()) {
-        		if (peerName != null && peerName.equals(peerURI.getFQDN())) {
-        			peerNameFound = true;
-        			break;
-        		}
-        	}
-        	if (!peerNameFound) {
-        		((IRealm)r).addPeerName(peerURI.getFQDN());
-        		logger.debug("Adding peerName-{} to realm-{}", peerURI.getFQDN(), realm);
-        	} else {
-        		logger.debug("Skipped adding peerName-{} to realm-{}, because it already exists", peerURI.getFQDN(), realm);
-        	}
+            boolean peerNameFound = false;
+            for (String peerName : ((IRealm)r).getPeerNames()) {
+                if (peerName != null && peerName.equals(peerURI.getFQDN())) {
+                    peerNameFound = true;
+                    break;
+                }
+            }
+            if (!peerNameFound) {
+                ((IRealm)r).addPeerName(peerURI.getFQDN());
+                logger.debug("Adding peerName-{} to realm-{}", peerURI.getFQDN(), realm);
+            } else {
+                logger.debug("Skipped adding peerName-{} to realm-{}, because it already exists", peerURI.getFQDN(), realm);
+            }
           found = true;
           break;
         }

@@ -34,7 +34,6 @@ import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.parser.MessageParser;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -43,10 +42,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
-// FIXME : requires JDK6 : import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+// FIXME : requires JDK6 : import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 
@@ -264,13 +264,13 @@ public class TCPClientConnection implements IConnection {
 
   protected void onMessageReceived(ByteBuffer message) throws AvpDataException {
     if (logger.isDebugEnabled()) {
-    	if (logger.isTraceEnabled()) {
-	    	String hex = MessageParser.byteArrayToHexString(message.array());
-	    	logger.trace("Received message of size [{}]\n{}", 
-	    		  new Object[] {message.array().length, hex});
-    	} else {
-    		logger.debug("Received message of size [{}]", message.array().length);
-    	}
+        if (logger.isTraceEnabled()) {
+            String hex = MessageParser.byteArrayToHexString(message.array());
+            logger.trace("Received message of size [{}]\n{}",
+                  new Object[] {message.array().length, hex});
+        } else {
+            logger.debug("Received message of size [{}]", message.array().length);
+        }
     }
     onEvent(new Event(EventType.MESSAGE_RECEIVED, message));
   }

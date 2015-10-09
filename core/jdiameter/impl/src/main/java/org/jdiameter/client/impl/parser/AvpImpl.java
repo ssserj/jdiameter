@@ -22,19 +22,15 @@
 
 package org.jdiameter.client.impl.parser;
 
+import org.jdiameter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
 import java.util.Arrays;
 import java.util.Date;
-
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.URI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *  
@@ -68,7 +64,7 @@ class AvpImpl implements Avp {
     vendorID = vnd;
     
     if (data != null) { // any data string/int/encoded-grouped
-    	rawData = Arrays.copyOf(data, data.length);
+        rawData = Arrays.copyOf(data, data.length);
     }
   }
 
@@ -79,17 +75,17 @@ class AvpImpl implements Avp {
     isEncrypted = avp.isEncrypted();
     isVendorSpecific = avp.isVendorId();
     try {
-    	byte[] data = avp.getRaw();
-    	if (data != null) { // simple AVP
-    		rawData = Arrays.copyOf(data, data.length);
-    	} else {
-    		// grouped AVP
-    		AvpSet grouped = avp.getGrouped();
-    		
-    		if (grouped != null) {
-    			groupedData = parser.decodeAvpSet(parser.encodeAvpSet(grouped)); // copy all
-    		}
-    	}
+        byte[] data = avp.getRaw();
+        if (data != null) { // simple AVP
+            rawData = Arrays.copyOf(data, data.length);
+        } else {
+            // grouped AVP
+            AvpSet grouped = avp.getGrouped();
+
+            if (grouped != null) {
+                groupedData = parser.decodeAvpSet(parser.encodeAvpSet(grouped)); // copy all
+            }
+        }
     } catch (Exception e) {
       logger.error("Can not create Avp", e);
     }
@@ -234,13 +230,13 @@ class AvpImpl implements Avp {
 
   public AvpSet getGrouped() throws AvpDataException {
     try {
-    	if (rawData != null) {
-    		return parser.decodeAvpSet(rawData);
-    	} else {
-    		return groupedData;
-    	}
+        if (rawData != null) {
+            return parser.decodeAvpSet(rawData);
+        } else {
+            return groupedData;
+        }
     } catch (Exception e) {
-      throw new AvpDataException(e, this);
+        throw new AvpDataException(e, this);
     }
   }
 
@@ -262,8 +258,8 @@ class AvpImpl implements Avp {
   @Override
   public String toString() {
     if(toString == null) {
-    	this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID)
-    		  .append(", len=").append((rawData != null) ? rawData.length : null).append("]@").append(super.hashCode()).toString(); 
+        this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID)
+              .append(", len=").append((rawData != null) ? rawData.length : null).append("]@").append(super.hashCode()).toString();
     }
 
     return this.toString;

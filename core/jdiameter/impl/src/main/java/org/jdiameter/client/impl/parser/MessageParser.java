@@ -42,18 +42,6 @@
 
 package org.jdiameter.client.impl.parser;
 
-import static org.jdiameter.api.Avp.ACCT_APPLICATION_ID;
-import static org.jdiameter.api.Avp.AUTH_APPLICATION_ID;
-import static org.jdiameter.api.Avp.SESSION_ID;
-import static org.jdiameter.api.Avp.VENDOR_SPECIFIC_APPLICATION_ID;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.nio.ByteBuffer;
-import java.util.concurrent.TimeUnit;
-
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
@@ -63,8 +51,16 @@ import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
+
+import static org.jdiameter.api.Avp.*;
 
 /**
  * 
@@ -79,8 +75,6 @@ public class MessageParser extends ElementParser implements IMessageParser {
   protected UIDGenerator endToEndGen = new UIDGenerator(
       (int) (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) & 0xFFF) << 20
   );
-
- 
 
   public MessageParser() {
 
@@ -158,7 +152,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
   }
 
   void copyBasicAvps(IMessage newMessage, IMessage prnMessage, boolean invertPoints) {
-	  //left it here, but 
+    //left it here, but
     Avp avp;
     // Copy session id's information
     {
@@ -241,34 +235,34 @@ public class MessageParser extends ElementParser implements IMessageParser {
   }
   
   public static String byteArrayToHexString(byte in[]) {
-	  return byteArrayToHexString(in, true);
+      return byteArrayToHexString(in, true);
   }
   
   public static String byteArrayToHexString(byte in[], boolean columnize) {
-		if (in == null || in.length <= 0) return "";
-		String pseudo = "0123456789ABCDEF";
+        if (in == null || in.length <= 0) return "";
+        String pseudo = "0123456789ABCDEF";
 
-		StringBuffer out = new StringBuffer(in.length * 3);
+        StringBuffer out = new StringBuffer(in.length * 3);
 
-		for (int i=0; i < in.length; i++) {
-			byte ch = in[i];
-			out.append(pseudo.charAt((int) ((ch & 0xF0) >> 4))); 
-			out.append(pseudo.charAt((int) (ch & 0x0F)));
-			
-			if (columnize) {
-				if ((i+1)%16 == 0) {
-					out.append("\n");
-				} else if ((i+1)%4 == 0) {
-					out.append(" ");
-				}
-			}
-		}
+        for (int i=0; i < in.length; i++) {
+            byte ch = in[i];
+            out.append(pseudo.charAt((int) ((ch & 0xF0) >> 4)));
+            out.append(pseudo.charAt((int) (ch & 0x0F)));
 
-		return out.toString();
+            if (columnize) {
+                if ((i+1)%16 == 0) {
+                    out.append("\n");
+                } else if ((i+1)%4 == 0) {
+                    out.append(" ");
+                }
+            }
+        }
+
+        return out.toString();
   }
   
   public static String byteArrayToHexStringLine(byte in[]) {
-	  return byteArrayToHexString(in, false);
+      return byteArrayToHexString(in, false);
   }
 
   public ByteBuffer encodeMessage(IMessage message) throws ParseException {
@@ -276,7 +270,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
     
     StringBuilder sb = null;
     if (logger.isTraceEnabled()) {
-    	sb = new StringBuilder();
+        sb = new StringBuilder();
     }
     
     try {
@@ -302,16 +296,16 @@ public class MessageParser extends ElementParser implements IMessageParser {
       throw new ParseException("Failed to encode message.", e);
     }
     try{
-    	byte[] enc = out.toByteArray();
-    	
-    	if (logger.isTraceEnabled()) {
-    		String hex = byteArrayToHexString(enc);
-    		logger.trace("encoded message {} of size [{}]:\n{}\n{}", new Object[]{message, enc.length, sb.toString(), hex});
-    	}
-    	return prepareBuffer(enc, out.size());
+        byte[] enc = out.toByteArray();
+
+        if (logger.isTraceEnabled()) {
+            String hex = byteArrayToHexString(enc);
+            logger.trace("encoded message {} of size [{}]:\n{}\n{}", new Object[]{message, enc.length, sb.toString(), hex});
+        }
+        return prepareBuffer(enc, out.size());
     }
     catch(AvpDataException ade) {
-    	throw new ParseException(ade);
+        throw new ParseException(ade);
     }
   }
 

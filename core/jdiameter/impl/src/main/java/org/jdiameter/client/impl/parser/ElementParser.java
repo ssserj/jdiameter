@@ -25,18 +25,11 @@ package org.jdiameter.client.impl.parser;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.api.parser.IElementParser;
-import org.slf4j.Logger;
+import org.jdiameter.client.api.parser.ParseException;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -93,9 +86,9 @@ public class ElementParser implements IElementParser {
 
     public String bytesToOctetString(byte[] rawData) throws AvpDataException {
         try {
-        	//TODO: veirfy ISO-8859-1 is correct here, according to google results its only ... western EU..
-        	//TODO: verify this, it octet sting we can not discard some chars, we have no idea whats there....
-        	// issue: http://code.google.com/p/mobicents/issues/detail?id=2757
+            //TODO: veirfy ISO-8859-1 is correct here, according to google results its only ... western EU..
+            //TODO: verify this, it octet sting we can not discard some chars, we have no idea whats there....
+            // issue: http://code.google.com/p/mobicents/issues/detail?id=2757
 //            char[] ca = new String(rawData, "iso-8859-1").toCharArray();
 //            StringBuffer rc = new StringBuffer(ca.length);
 //            
@@ -106,7 +99,7 @@ public class ElementParser implements IElementParser {
 //                }
 //          
 //            return rc.toString();
-        	return new String(rawData, "iso-8859-1");
+            return new String(rawData, "iso-8859-1");
         } catch (UnsupportedEncodingException e) {
             throw new AvpDataException("Invalid data type", e);
         }
@@ -254,39 +247,39 @@ public class ElementParser implements IElementParser {
     }
     
     private String fullDecode(byte[] buffer, int shift) throws IOException {
-    	DataInputStream in = new DataInputStream(new ByteArrayInputStream(buffer, shift, buffer.length));
-    	StringBuilder sb = new StringBuilder();
-    	
-    	int read = shift;
-    	while (read < buffer.length) {
-    		int code = in.readInt();
-    		int flags = in.readInt();
-    		int consumed = 8;
-    		
-    		int vendor = ((flags & 0x80) != 0) ? in.readInt() : -1;
-    		if (vendor != -1) {
-    			consumed += 4;
-    		}
-    		
-    		int length = (int)(flags & 0xFFFFFF) - consumed;
-    		int padding = ((length % 4) != 0) ? (4 - (length % 4)) : 0;
-    		length += padding;
-    		
-    		int num_read = ((read + consumed + length) > buffer.length) ? (buffer.length-consumed-read) : length;
-    		int skip = num_read;
-    		
-    		while (skip > 0) {
-    			skip -= in.skipBytes(skip);
-    		}
-    		
-    		read += (consumed + num_read);
-    		
-    		sb.append(" code: ").append(code).append(" flags: ").append(flags)
-    		  .append(" len: ").append(length).append(" pad: ").append(padding)
-    		  .append(" skip: ").append(skip).append(" read: ").append(read).append("\n");
-    	}
-    	
-    	return sb.toString();
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(buffer, shift, buffer.length));
+        StringBuilder sb = new StringBuilder();
+
+        int read = shift;
+        while (read < buffer.length) {
+            int code = in.readInt();
+            int flags = in.readInt();
+            int consumed = 8;
+
+            int vendor = ((flags & 0x80) != 0) ? in.readInt() : -1;
+            if (vendor != -1) {
+                consumed += 4;
+            }
+
+            int length = (int)(flags & 0xFFFFFF) - consumed;
+            int padding = ((length % 4) != 0) ? (4 - (length % 4)) : 0;
+            length += padding;
+
+            int num_read = ((read + consumed + length) > buffer.length) ? (buffer.length-consumed-read) : length;
+            int skip = num_read;
+
+            while (skip > 0) {
+                skip -= in.skipBytes(skip);
+            }
+
+            read += (consumed + num_read);
+
+            sb.append(" code: ").append(code).append(" flags: ").append(flags)
+              .append(" len: ").append(length).append(" pad: ").append(padding)
+              .append(" skip: ").append(skip).append(" read: ").append(read).append("\n");
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -301,7 +294,7 @@ public class ElementParser implements IElementParser {
       AvpSetImpl avps = new AvpSetImpl();
       
       if (buffer == null) {
-    	  return avps; // empty
+          return avps; // empty
       }
       
       int tmp, counter = shift;
@@ -314,9 +307,9 @@ public class ElementParser implements IElementParser {
         int length  = tmp & 0xFFFFFF;
         
         if(length < 0 || counter + length > buffer.length) {
-        	logger.error("unable to decode code: {}, flags: {}, length: {}, counter: {}, shift:{}, buf_size: {}\n{}\n{}",
-        			new Object[]{code, (short)flags, length, counter, shift, buffer.length, MessageParser.byteArrayToHexString(buffer), fullDecode(buffer,shift)});
-        	throw new AvpDataException("Not enough data in buffer!");
+            logger.error("unable to decode code: {}, flags: {}, length: {}, counter: {}, shift:{}, buf_size: {}\n{}\n{}",
+                    new Object[]{code, (short)flags, length, counter, shift, buffer.length, MessageParser.byteArrayToHexString(buffer), fullDecode(buffer,shift)});
+            throw new AvpDataException("Not enough data in buffer!");
         }
         long vendor = 0;
         if ((flags & 0x80) != 0) {
@@ -340,7 +333,7 @@ public class ElementParser implements IElementParser {
     }
     
     public byte[] encodeAvpSet(AvpSet avps) {
-    	return encodeAvpSet(avps, null, "");
+        return encodeAvpSet(avps, null, "");
     }
     
     public byte[] encodeAvpSet(AvpSet avps, StringBuilder sb, String prefix) {
@@ -348,12 +341,12 @@ public class ElementParser implements IElementParser {
         try {
           DataOutputStream data = new DataOutputStream(out);
           for (Avp a : avps) {
-        	  byte[] raw = a.getRaw();
+              byte[] raw = a.getRaw();
               byte[] enc = encodeAvp(a);
               
               if (sb != null) {
-            	  sb.append(prefix).append(a).append(", len: ").append((raw != null) ? raw.length : null)
-            	  	.append(", enc: ").append(MessageParser.byteArrayToHexStringLine(enc)).append("\n");
+                  sb.append(prefix).append(a).append(", len: ").append((raw != null) ? raw.length : null)
+                    .append(", enc: ").append(MessageParser.byteArrayToHexStringLine(enc)).append("\n");
               }
               
               data.write(enc);
@@ -374,7 +367,7 @@ public class ElementParser implements IElementParser {
           
           byte[] raw = avp.getRaw();
           if (raw == null) {
-        	  raw = encodeAvpSet(avp.getGrouped());
+              raw = encodeAvpSet(avp.getGrouped());
           }
           
           int origLength = raw.length + 8 + (avp.getVendorId() != 0 ? 4 : 0);

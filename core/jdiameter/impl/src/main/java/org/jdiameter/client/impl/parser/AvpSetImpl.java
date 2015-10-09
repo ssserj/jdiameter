@@ -30,21 +30,13 @@ package org.jdiameter.client.impl.parser;
  *
  */
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
+import org.jdiameter.api.*;
+import org.jdiameter.client.api.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.URI;
-import org.jdiameter.client.api.parser.ParseException;
+
+import java.net.InetAddress;
+import java.util.*;
 
 /**
  * 
@@ -56,7 +48,7 @@ class AvpSetImpl implements AvpSet {
 
   // FIXME: by default 3588.4-1 says: 'M' should be set to true;
   // FIXME: by default 3588.x says: if grouped has at least on AVP with 'M' set, it also has to have 'M' set! - TODO: add backmapping.
-	
+
   private static final Logger logger = LoggerFactory.getLogger(AvpSetImpl.class);
   
   private static final long serialVersionUID = 1L;
@@ -113,7 +105,7 @@ class AvpSetImpl implements AvpSet {
     }
 
     public AvpSet removeAvp(int avpCode) {
-    	return removeAvp(avpCode, 0);
+        return removeAvp(avpCode, 0);
     }
     
     public AvpSet removeAvp(int avpCode, long vendorId) {
@@ -196,10 +188,10 @@ class AvpSetImpl implements AvpSet {
         this.avps.add(index, res);
         
         try {
-			return res.getGrouped();
-		} catch (AvpDataException e) {
-			logger.error("insert avp failed", e);
-		}
+            return res.getGrouped();
+        } catch (AvpDataException e) {
+            logger.error("insert avp failed", e);
+        }
         return null;
     }
 
@@ -435,10 +427,10 @@ class AvpSetImpl implements AvpSet {
         this.avps.add(res);
         
         try {
-			return res.getGrouped();
-		} catch (AvpDataException e) {
-			logger.error("add avp failed", e);
-		}
+            return res.getGrouped();
+        } catch (AvpDataException e) {
+            logger.error("add avp failed", e);
+        }
         return null;
     }
 
@@ -448,10 +440,10 @@ class AvpSetImpl implements AvpSet {
         this.avps.add(res);
         
         try {
-			return res.getGrouped();
-		} catch (AvpDataException e) {
-			logger.error("add avp failed", e);
-		}
+            return res.getGrouped();
+        } catch (AvpDataException e) {
+            logger.error("add avp failed", e);
+        }
         return null;
     }
 
@@ -461,10 +453,10 @@ class AvpSetImpl implements AvpSet {
         this.avps.add(res);
         
         try {
-			return res.getGrouped();
-		} catch (AvpDataException e) {
-			logger.error("add avp failed", e);
-		}
+            return res.getGrouped();
+        } catch (AvpDataException e) {
+            logger.error("add avp failed", e);
+        }
         return null;
     }
 
@@ -683,10 +675,10 @@ class AvpSetImpl implements AvpSet {
         this.avps.add(index, res);
 
         try {
-			return res.getGrouped();
-		} catch (AvpDataException e) {
-			logger.error("insert avp failed", e);
-		}
+            return res.getGrouped();
+        } catch (AvpDataException e) {
+            logger.error("insert avp failed", e);
+        }
         return null;
     }
 
@@ -696,10 +688,10 @@ class AvpSetImpl implements AvpSet {
         this.avps.add(index, res);
         
         try {
-			return res.getGrouped();
-		} catch (AvpDataException e) {
-			logger.error("insert avp failed", e);
-		}
+            return res.getGrouped();
+        } catch (AvpDataException e) {
+            logger.error("insert avp failed", e);
+        }
         return null;
     }
 
