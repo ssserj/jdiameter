@@ -14,7 +14,7 @@
 
 	<packaging>pom</packaging>
 
-	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter :: ${project.artifactId}</name>
 	<description>Mobicents Diameter</description>
 	<url>http://code.google.com/p/jdiameter/</url>
 
@@ -58,6 +58,7 @@
 
 	<modules>
 		<module>core</module>
+		<module>testsuite</module>
 	</modules>
 
 	<build>
@@ -68,10 +69,25 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+					<eclipseProjectName>${project.artifactId}</eclipseProjectName>
 					<generateProjectsForModules>false</generateProjectsForModules>
 				</configuration>
 			</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 

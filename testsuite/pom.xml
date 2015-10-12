@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-parent</artifactId>
-		<version>1.6.0-SNAPSHOT</version>
+		<version>1.7.0-SNAPSHOT</version>
 	</parent>
 
 	<packaging>pom</packaging>
@@ -34,6 +34,12 @@
 		<version.jboss.sx.client>2.0.1-BETA</version.jboss.sx.client>
 		<version.jboss.naming.jnp-client>5.0.4.GA</version.jboss.naming.jnp-client>
 	</properties>
+
+    <modules>
+        <module>load</module>
+        <module>test-framework</module>
+        <module>tests</module>
+    </modules>
 
 	<dependencyManagement>
 		<dependencies>

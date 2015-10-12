@@ -2,9 +2,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.mobicents.diameter.testsuite</groupId>
-		<artifactId>testsuite-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+        <groupId>org.mobicents.diameter.testsuite</groupId>
+        <artifactId>testsuite-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>testsuite-test-framework</artifactId>
@@ -31,10 +31,10 @@
 			<artifactId>jdiameter-ha-impl</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<artifactId>picocontainer</artifactId>
-			<groupId>picocontainer</groupId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<artifactId>picocontainer</artifactId>-->
+			<!--<groupId>picocontainer</groupId>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
